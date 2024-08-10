@@ -54,7 +54,7 @@ public class ForceRegisterCommand extends RatelimitedCommand {
 
   @Override
   public void execute(CommandSource source, String[] args) {
-    if (args.length == 2) {
+    if (args.length >= 2 && args.length <= 3) {
       String nickname = args[0];
       String password = args[1];
 
@@ -71,7 +71,13 @@ public class ForceRegisterCommand extends RatelimitedCommand {
           return;
         }
 
-        RegisteredPlayer player = new RegisteredPlayer(nickname, "", "").setPassword(password);
+        String uuid = "";
+
+        if (args.length == 3) {
+          uuid = args[2];
+        }
+
+        RegisteredPlayer player = new RegisteredPlayer(nickname, uuid, "").setPassword(password);
         this.playerDao.create(player);
 
         source.sendMessage(serializer.deserialize(MessageFormat.format(this.successful, nickname)));
