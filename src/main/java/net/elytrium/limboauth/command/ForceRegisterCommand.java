@@ -25,7 +25,6 @@ import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.UUID;
-
 import net.elytrium.commons.kyori.serialization.Serializer;
 import net.elytrium.limboauth.LimboAuth;
 import net.elytrium.limboauth.Settings;
@@ -86,7 +85,7 @@ public class ForceRegisterCommand extends RatelimitedCommand {
             uuidStr = uuid.toString();
 
             // check if provided uuid is unique in db
-            QueryBuilder<RegisteredPlayer, String> uuidCountBuilder = playerDao.queryBuilder();
+            QueryBuilder<RegisteredPlayer, String> uuidCountBuilder = this.playerDao.queryBuilder();
             uuidCountBuilder.setCountOf(true);
             uuidCountBuilder.setWhere(uuidCountBuilder.where().eq("UUID", uuidStr));
 
