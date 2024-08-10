@@ -473,9 +473,11 @@ public class Settings extends YamlConfig {
       public String FORCE_CHANGE_PASSWORD_NOT_REGISTERED = "{PRFX} &cPlayer &6{0}&c is not registered.";
       public String FORCE_CHANGE_PASSWORD_USAGE = "{PRFX} Usage: &6/forcechangepassword <nickname> <new password>";
 
-      public String FORCE_REGISTER_USAGE = "{PRFX} Usage: &6/forceregister <nickname> <password>";
+      public String FORCE_REGISTER_USAGE = "{PRFX} Usage: &6/forceregister <nickname> <password> [uuid]";
       public String FORCE_REGISTER_INCORRECT_NICKNAME = "{PRFX} &cNickname contains forbidden characters.";
       public String FORCE_REGISTER_TAKEN_NICKNAME = "{PRFX} &cThis nickname is already taken.";
+      public String FORCE_REGISTER_INCORRECT_UUID = "{PRFX} &cProvided UUID is incorrect.";
+      public String FORCE_REGISTER_TAKEN_UUID = "{PRFX} &cThis UUID is already taken.";
       public String FORCE_REGISTER_SUCCESSFUL = "{PRFX} &aSuccessfully registered player &6{0}&a!";
       public String FORCE_REGISTER_NOT_SUCCESSFUL = "{PRFX} &cUnable to register player &6{0}&c.";
 

@@ -18,11 +18,14 @@
 package net.elytrium.limboauth.command;
 
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.QueryBuilder;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.SimpleCommand;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.Locale;
+import java.util.UUID;
+
 import net.elytrium.commons.kyori.serialization.Serializer;
 import net.elytrium.limboauth.LimboAuth;
 import net.elytrium.limboauth.Settings;
@@ -40,6 +43,8 @@ public class ForceRegisterCommand extends RatelimitedCommand {
   private final Component usage;
   private final Component takenNickname;
   private final Component incorrectNickname;
+  private final Component takenUUID;
+  private final Component incorrectUUID;
 
   public ForceRegisterCommand(LimboAuth plugin, Dao<RegisteredPlayer, String> playerDao) {
     this.plugin = plugin;
@@ -50,6 +55,8 @@ public class ForceRegisterCommand extends RatelimitedCommand {
     this.usage = LimboAuth.getSerializer().deserialize(Settings.IMP.MAIN.STRINGS.FORCE_REGISTER_USAGE);
     this.takenNickname = LimboAuth.getSerializer().deserialize(Settings.IMP.MAIN.STRINGS.FORCE_REGISTER_TAKEN_NICKNAME);
     this.incorrectNickname = LimboAuth.getSerializer().deserialize(Settings.IMP.MAIN.STRINGS.FORCE_REGISTER_INCORRECT_NICKNAME);
+    this.takenUUID = LimboAuth.getSerializer().deserialize(Settings.IMP.MAIN.STRINGS.FORCE_REGISTER_TAKEN_UUID);
+    this.incorrectUUID = LimboAuth.getSerializer().deserialize(Settings.IMP.MAIN.STRINGS.FORCE_REGISTER_INCORRECT_UUID);
   }
 
   @Override
@@ -71,13 +78,29 @@ public class ForceRegisterCommand extends RatelimitedCommand {
           return;
         }
 
-        String uuid = "";
+        String uuidStr = "";
 
         if (args.length == 3) {
-          uuid = args[2];
+          try {
+            UUID uuid = UUID.fromString(args[2]);
+            uuidStr = uuid.toString();
+
+            // check if provided uuid is unique in db
+            QueryBuilder<RegisteredPlayer, String> uuidCountBuilder = playerDao.queryBuilder();
+            uuidCountBuilder.setCountOf(true);
+            uuidCountBuilder.setWhere(uuidCountBuilder.where().eq("UUID", uuidStr));
+
+            if (this.playerDao.countOf(uuidCountBuilder.prepare()) >= 1) {
+              source.sendMessage(this.takenUUID);
+              return;
+            }
+          } catch (IllegalArgumentException exception) {
+            source.sendMessage(this.incorrectUUID);
+            return;
+          }
         }
 
-        RegisteredPlayer player = new RegisteredPlayer(nickname, uuid, "").setPassword(password);
+        RegisteredPlayer player = new RegisteredPlayer(nickname, uuidStr, "").setPassword(password);
         this.playerDao.create(player);
 
         source.sendMessage(serializer.deserialize(MessageFormat.format(this.successful, nickname)));
