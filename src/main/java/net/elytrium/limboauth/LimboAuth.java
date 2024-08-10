@@ -633,8 +633,10 @@ public class LimboAuth {
     EventManager eventManager = this.server.getEventManager();
     if (registeredPlayer == null) {
       if (Settings.IMP.MAIN.DISABLE_REGISTRATIONS) {
-        player.disconnect(this.registrationsDisabledKick);
-        return;
+        if (!(onlineMode || isFloodgate) || Settings.IMP.MAIN.ONLINE_MODE_NEED_AUTH) {
+          player.disconnect(this.registrationsDisabledKick);
+          return;
+        } //else continue as online mode players don't need to register
       }
 
       Consumer<TaskEvent> eventConsumer = (event) -> this.sendPlayer(event, null);
